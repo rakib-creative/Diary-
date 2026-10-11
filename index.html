@@ -1,0 +1,652 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{margin:0}</style></head><body><title>Torn Pages</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@500&family=Covered+By+Your+Grace&family=Homemade+Apple&family=IM+Fell+English:ital@0;1&family=Atma:wght@500&family=Galada&family=Tiro+Bangla&family=Baloo+Da+2:wght@500&family=Mina&family=Hind+Siliguri:wght@500&family=Indie+Flower&family=Reenie+Beanie&family=Shadows+Into+Light+Two&family=Special+Elite&display=swap">
+<style>
+/* Layout: a writing desk. Left column holds the writing and page options, right column holds the live sheet and the download button. Single look: dark walnut desk, brass accent, paper is drawn on a canvas. */
+:root {
+  --desk: #241912;
+  --desk-2: #2f2218;
+  --panel: #38291d;
+  --line: #5b4533;
+  --text: #f2e6cc;
+  --muted: #bda989;
+  --brass: #e3a93f;
+  --brass-ink: #261a0f;
+  --danger: #f08c6b;
+  --display: "IM Fell English", Georgia, "Times New Roman", serif;
+  --label: "Special Elite", "Courier New", monospace;
+  --body: Georgia, "Times New Roman", serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background:
+    repeating-linear-gradient(92deg, rgba(0,0,0,.05) 0 2px, rgba(255,255,255,.015) 2px 5px),
+    radial-gradient(120% 90% at 50% 0%, var(--desk-2), var(--desk));
+  background-color: var(--desk);
+  color: var(--text);
+  font-family: var(--body);
+  font-size: 16px;
+  line-height: 1.5;
+  padding-inline: 16px;
+  padding-block: 28px 56px;
+}
+.wrap { max-width: 1120px; margin-inline: auto; }
+header { text-align: center; margin-bottom: 28px; }
+h1 { font-family: var(--display); font-weight: 400; font-size: clamp(2.2rem, 7vw, 3.6rem); letter-spacing: .02em; margin: 0; text-wrap: balance; }
+.tag { font-family: var(--label); color: var(--muted); font-size: .95rem; margin: 6px 0 0; letter-spacing: .04em; }
+.grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+@media (max-width: 880px) { .grid { grid-template-columns: minmax(0, 1fr); } }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 18px; display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+label, .lbl { font-family: var(--label); font-size: .82rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+input[type=text], textarea {
+  width: 100%; background: #2a1e15; color: var(--text); border: 1px solid var(--line); border-radius: 4px;
+  padding: 10px 12px; font: inherit; min-width: 0;
+}
+textarea { min-height: 220px; resize: vertical; line-height: 1.55; }
+input:focus-visible, textarea:focus-visible, button:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; }
+.count { font-family: var(--label); font-size: .82rem; color: var(--muted); display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.count.full { color: var(--danger); }
+.row { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  font: inherit; font-family: var(--label); font-size: .85rem; color: var(--text); background: #2a1e15; border: 1px solid var(--line);
+  border-radius: 4px; padding: 8px 10px; cursor: pointer; display: flex; align-items: center; gap: 8px; min-width: 0;
+}
+.chip[aria-pressed=true] { border-color: var(--brass); box-shadow: inset 0 0 0 1px var(--brass); background: #3d2c1b; }
+.pat { width: 22px; height: 26px; flex: none; background-color: #e8d49a; border-radius: 2px; border: 1px solid #00000040; }
+.pat.ruled { background-image: linear-gradient(#7a8fb066 1px, transparent 1px); background-size: 100% 6px; }
+.pat.wide { background-image: linear-gradient(#7a8fb099 1px, transparent 1px); background-size: 100% 9px; }
+.pat.grid { background-image: linear-gradient(#7a8fb077 1px, transparent 1px), linear-gradient(90deg, #7a8fb077 1px, transparent 1px); background-size: 6px 6px; }
+.pat.dots { background-image: radial-gradient(#5a6a8aaa 1px, transparent 1.2px); background-size: 6px 6px; }
+.pat.plain { }
+.pat.cornell { background-image: linear-gradient(90deg, transparent 8px, #b0554a99 8px 9px, transparent 9px), linear-gradient(#7a8fb066 1px, transparent 1px); background-size: 100% 100%, 100% 6px; }
+.pat.todo { background-image: linear-gradient(#7a8fb066 1px, transparent 1px), radial-gradient(#00000000 2px, #3a2a1a 2.2px 3px, transparent 3.2px); background-size: 100% 6px, 100% 6px; }
+.pat.letter { box-shadow: inset 0 0 0 3px #e8d49a, inset 0 0 0 4px #7a5a3a; }
+.pat.legal { background-color: #f0dd7a; background-image: linear-gradient(90deg, transparent 5px, #c0453a 5px 6px, transparent 6px 7px, #c0453a 7px 8px, transparent 8px), linear-gradient(#6f86b177 1px, transparent 1px); background-size: 100% 100%, 100% 6px; }
+.pat.scrap { box-shadow: inset 0 0 0 3px #e8d49a, inset 0 0 0 4px #7a5a3a; background-image: radial-gradient(#5a6a8a88 1px, transparent 1.2px); background-size: 6px 6px; }
+.swatch { width: 38px; height: 38px; border-radius: 50%; border: 2px solid var(--line); cursor: pointer; padding: 0; }
+.swatch[aria-pressed=true] { border-color: var(--brass); box-shadow: 0 0 0 2px var(--panel), 0 0 0 4px var(--brass); }
+.fontchip { font-size: 1.25rem; padding: 4px 12px; line-height: 1.4; }
+.opt { display: flex; gap: 8px; align-items: center; font-family: var(--label); font-size: .9rem; color: var(--text); text-transform: none; letter-spacing: 0; cursor: pointer; }
+.opt input { accent-color: var(--brass); width: 18px; height: 18px; }
+.stage { position: sticky; top: 16px; display: flex; flex-direction: column; gap: 14px; align-items: stretch; min-width: 0; }
+@media (max-width: 880px) { .stage { position: static; } }
+.paperbox { width: 100%; max-width: 560px; margin-inline: auto; }
+canvas#sheet { width: 100%; height: auto; display: block; }
+.btn {
+  font-family: var(--label); font-size: 1.05rem; letter-spacing: .06em; background: var(--brass); color: var(--brass-ink);
+  border: 0; border-radius: 4px; padding: 14px 18px; cursor: pointer; font-weight: 700;
+}
+.btn:hover { filter: brightness(1.08); }
+.btn.ghost { background: transparent; color: var(--text); border: 1px solid var(--line); font-weight: 400; font-size: .92rem; padding: 10px 14px; }
+.actions { display: flex; flex-direction: column; gap: 10px; max-width: 560px; width: 100%; margin-inline: auto; }
+.note { font-family: var(--label); font-size: .85rem; color: var(--muted); min-height: 1.4em; text-align: center; margin: 0; }
+.note.err { color: var(--danger); }
+footer { text-align: center; color: var(--muted); font-family: var(--label); font-size: .8rem; margin-top: 32px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+body { overflow-x: clip; }
+.paperbox { position: relative; }
+canvas#sheet { position: relative; z-index: 2; will-change: transform; }
+.stack { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+.under { position: absolute; background: var(--pc, #ecd9a0); box-shadow: inset 0 -2px 0 rgba(0,0,0,.2), inset 0 0 34px var(--pe, rgba(150,110,50,.4)), 0 1px 3px rgba(0,0,0,.5); border-radius: 2px; }
+.hole { position: absolute; width: 2.98%; height: 2.26%; border-radius: 50%; background: #241912; box-shadow: inset 1px 2px 3px rgba(0,0,0,.7), 0 0 0 1.5px rgba(80,55,25,.35); }
+</style>
+<div class="wrap">
+  <header>
+    <h1>Torn Pages</h1>
+    <p class="tag">Write it down. Tear it out. Keep it.</p>
+  </header>
+
+  <div class="grid">
+    <section class="card" aria-label="Write your page">
+      <div class="field">
+        <label for="date">Date</label>
+        <input type="text" id="date" maxlength="60" autocomplete="off">
+      </div>
+      <div class="field">
+        <label for="title">Title</label>
+        <input type="text" id="title" maxlength="60" placeholder="Dear Diary," autocomplete="off">
+      </div>
+      <div class="field">
+        <label for="body">Your entry</label>
+        <textarea id="body" placeholder="What happened today? Write anything you want to remember."></textarea>
+        <div class="count" id="count"><span id="lines">0 lines used</span><span id="left"></span></div>
+        <div class="row"><button type="button" class="chip" id="clear">Clear page</button></div>
+      </div>
+
+      <div class="field">
+        <span class="lbl">Page style</span>
+        <div class="row" id="styles"></div>
+      </div>
+      <div class="field">
+        <span class="lbl">Paper</span>
+        <div class="row" id="papers"></div>
+      </div>
+      <div class="field">
+        <span class="lbl">Ink</span>
+        <div class="row" id="inks"></div>
+      </div>
+      <div class="field">
+        <span class="lbl">Handwriting</span>
+        <div class="row" id="fonts"></div>
+      </div>
+      <div class="field">
+        <span class="lbl">Torn edge</span>
+        <div class="row" id="edges"></div>
+      </div>
+      <div class="field">
+        <span class="lbl">Extras</span>
+        <div class="row">
+          <label class="opt"><input type="checkbox" id="x-stain"> Coffee stain</label>
+          <label class="opt"><input type="checkbox" id="x-tape"> Tape</label>
+          <label class="opt"><input type="checkbox" id="x-fold" checked> Fold crease</label>
+          <label class="opt"><input type="checkbox" id="x-age" checked> Age spots</label>
+        </div>
+      </div>
+    </section>
+
+    <section class="stage" aria-label="Preview">
+      <div class="paperbox"><canvas id="sheet" width="940" height="1240" aria-label="Preview of your torn diary page"></canvas></div>
+      <div class="actions">
+        <button class="btn" id="dl" type="button">Download this page</button>
+        <button class="btn ghost" id="retear" type="button">Tear it differently</button>
+        <p class="note" id="note" role="status"></p>
+      </div>
+    </section>
+  </div>
+  <footer>Your writing stays in your browser. Nothing is uploaded.</footer>
+</div>
+<script>
+(function () {
+  var W = 940, H = 1240, X0 = 60, Y0 = 40, X1 = 890, Y1 = 1200;
+
+  var STYLES = [
+    { id: 'ruled', name: 'Ruled' }, { id: 'wide', name: 'Wide ruled' }, { id: 'grid', name: 'Graph' },
+    { id: 'dots', name: 'Dot grid' }, { id: 'plain', name: 'Plain' }, { id: 'cornell', name: 'Cornell' },
+    { id: 'todo', name: 'Checklist' }, { id: 'letter', name: 'Letter' }, { id: 'legal', name: 'Legal pad' },
+    { id: 'scrap', name: 'Scrapbook' }
+  ];
+  var PAPERS = [
+    { n: 'Parchment', c: '#ecd9a0', e: '#b98f4a' }, { n: 'Old tea', c: '#e2c688', e: '#a97a38' },
+    { n: 'Butter', c: '#f3e5ae', e: '#c8a95c' }, { n: 'Honey', c: '#e9cd7c', e: '#b38a30' },
+    { n: 'Faded straw', c: '#efdfb4', e: '#bf9d62' }, { n: 'Sepia rose', c: '#ebd2a6', e: '#b5845a' }
+  ];
+  var INKS = [
+    { n: 'Brown black', c: '#2b1d12' }, { n: 'Blue', c: '#213f78' }, { n: 'Blue black', c: '#1f2a3a' },
+    { n: 'Maroon', c: '#6b1f1f' }, { n: 'Forest', c: '#21472f' }
+  ];
+  var FONTS = [
+    { n: 'Caveat', f: 'Caveat', s: 1.0, b: { f: 'Atma', s: .6, w: 500 } }, { n: 'Reenie Beanie', f: 'Reenie Beanie', s: 1.3, b: { f: 'Galada', s: .58, w: 400 } },
+    { n: 'Homemade Apple', f: 'Homemade Apple', s: 0.66, b: { f: 'Tiro Bangla', s: .6, w: 400 } }, { n: 'Covered By Your Grace', f: 'Covered By Your Grace', s: 0.95, b: { f: 'Baloo Da 2', s: .6, w: 500 } },
+    { n: 'Shadows Into Light Two', f: 'Shadows Into Light Two', s: 0.9, b: { f: 'Mina', s: .6, w: 400 } }, { n: 'Indie Flower', f: 'Indie Flower', s: 0.82, b: { f: 'Hind Siliguri', s: .6, w: 500 } }
+  ];
+  var EDGES = [{ id: 'spiral', name: 'Spiral tear' }, { id: 'rough', name: 'Rough tear' }, { id: 'straight', name: 'Clean cut' }];
+
+  var state = { style: 'ruled', paper: 0, ink: 1, font: 0, edge: 'spiral', seed: 7 };
+
+  function rng(a) {
+    return function () {
+      a |= 0; a = a + 0x6D2B79F5 | 0;
+      var t = Math.imul(a ^ a >>> 15, 1 | a);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+
+  // Left edge points, top to bottom
+  function leftPts(edge, seed, spread) {
+    var r = rng(seed), pts = [], y, x, walk = 0;
+    for (y = Y0; y <= Y1; y += 5) {
+      var jag = r() * 5 + (spread || 0) * r();
+      if (edge === 'straight') { x = X0 + 4; }
+      else if (edge === 'rough') {
+        walk += (r() - .5) * 9; walk *= .86;
+        x = X0 + 10 + walk + jag * 1.4 + Math.sin(y / 61) * 5;
+      } else {
+        var bite = 0, k, hy, dy, rad = 14;
+        for (k = 0; k < 15; k++) {
+          hy = Y0 + 70 + k * 78; dy = y - hy;
+          if (Math.abs(dy) < rad) bite = Math.max(bite, Math.sqrt(rad * rad - dy * dy));
+        }
+        walk += (r() - .5) * 3; walk *= .8;
+        x = X0 + 6 + jag + bite * 1.05 + walk;
+      }
+      pts.push([x, y]);
+    }
+    return pts;
+  }
+  function pathFrom(ctx, pts) {
+    ctx.beginPath();
+    ctx.moveTo(pts[0][0], Y0);
+    ctx.lineTo(X1, Y0); ctx.lineTo(X1, Y1);
+    for (var i = pts.length - 1; i >= 0; i--) ctx.lineTo(pts[i][0], pts[i][1]);
+    ctx.closePath();
+  }
+
+  function texture(ctx, paper, opts) {
+    var r = rng(991), i, x, y, g;
+    var cx = (X0 + X1) / 2, cy = (Y0 + Y1) / 2;
+    g = ctx.createRadialGradient(cx, cy, 240, cx, cy, 760);
+    g.addColorStop(0, 'rgba(255,248,215,.10)');
+    g.addColorStop(.7, 'rgba(0,0,0,0)');
+    g.addColorStop(1, hexA(paper.e, .55));
+    ctx.fillStyle = g; ctx.fillRect(X0 - 20, Y0 - 20, X1 - X0 + 40, Y1 - Y0 + 40);
+    // darker band at the torn side
+    g = ctx.createLinearGradient(X0, 0, X0 + 90, 0);
+    g.addColorStop(0, hexA(paper.e, .45)); g.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = g; ctx.fillRect(X0 - 20, Y0, 130, Y1 - Y0);
+    for (i = 0; i < 2600; i++) {
+      x = X0 + r() * (X1 - X0); y = Y0 + r() * (Y1 - Y0);
+      ctx.fillStyle = r() < .72 ? 'rgba(95,62,22,' + (.04 + r() * .09).toFixed(3) + ')' : 'rgba(255,250,225,' + (.06 + r() * .1).toFixed(3) + ')';
+      ctx.fillRect(x, y, 1 + r() * 1.6, 1 + r() * 1.6);
+    }
+    ctx.lineWidth = 1;
+    for (i = 0; i < 170; i++) {
+      x = X0 + r() * (X1 - X0); y = Y0 + r() * (Y1 - Y0);
+      var a = r() * 6.28, l = 6 + r() * 16;
+      ctx.strokeStyle = 'rgba(110,75,30,' + (.05 + r() * .06).toFixed(3) + ')';
+      ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + Math.cos(a) * l, y + Math.sin(a) * l); ctx.stroke();
+    }
+    if (opts.age) {
+      for (i = 0; i < 16; i++) {
+        x = X0 + r() * (X1 - X0); y = Y0 + r() * (Y1 - Y0);
+        var rad = 14 + r() * 46;
+        g = ctx.createRadialGradient(x, y, 0, x, y, rad);
+        g.addColorStop(0, 'rgba(130,85,30,' + (.10 + r() * .1).toFixed(2) + ')');
+        g.addColorStop(1, 'rgba(130,85,30,0)');
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, rad, 0, 6.2832); ctx.fill();
+      }
+    }
+    if (opts.fold) {
+      var fy = Y0 + (Y1 - Y0) * .5, fx = X0 + (X1 - X0) * .52;
+      g = ctx.createLinearGradient(0, fy - 12, 0, fy + 12);
+      g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(.45, 'rgba(70,45,15,.16)');
+      g.addColorStop(.55, 'rgba(255,248,215,.20)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = g; ctx.fillRect(X0 - 20, fy - 12, X1 - X0 + 40, 24);
+      g = ctx.createLinearGradient(fx - 10, 0, fx + 10, 0);
+      g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(.45, 'rgba(70,45,15,.12)');
+      g.addColorStop(.55, 'rgba(255,248,215,.16)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = g; ctx.fillRect(fx - 10, Y0, 20, Y1 - Y0);
+    }
+    if (opts.stain) {
+      var sx = X1 - 190, sy = Y1 - 230;
+      g = ctx.createRadialGradient(sx, sy, 20, sx, sy, 92);
+      g.addColorStop(0, 'rgba(140,90,35,.10)'); g.addColorStop(1, 'rgba(140,90,35,.0)');
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(sx, sy, 92, 0, 6.2832); ctx.fill();
+      ctx.strokeStyle = 'rgba(122,74,26,.34)'; ctx.lineWidth = 5;
+      ctx.beginPath(); ctx.arc(sx, sy, 70, .3, 5.6); ctx.stroke();
+      ctx.strokeStyle = 'rgba(122,74,26,.18)'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(sx + 3, sy + 2, 64, 1.4, 6.0); ctx.stroke();
+      ctx.fillStyle = 'rgba(122,74,26,.28)';
+      ctx.beginPath(); ctx.arc(sx + 98, sy + 26, 6, 0, 6.2832); ctx.fill();
+      ctx.beginPath(); ctx.arc(sx + 112, sy + 10, 3, 0, 6.2832); ctx.fill();
+    }
+  }
+
+  function tape(ctx) {
+    ctx.save();
+    ctx.translate(X1 - 120, Y0 + 12); ctx.rotate(.55);
+    var w = 150, h = 52, i;
+    ctx.shadowColor = 'rgba(0,0,0,.3)'; ctx.shadowBlur = 5; ctx.shadowOffsetY = 2;
+    ctx.fillStyle = 'rgba(238,224,170,.72)';
+    ctx.beginPath(); ctx.moveTo(-w / 2, -h / 2);
+    for (i = 0; i <= 6; i++) ctx.lineTo(-w / 2 + (i % 2 ? 5 : 0), -h / 2 + i * h / 6);
+    ctx.lineTo(w / 2, h / 2);
+    for (i = 6; i >= 0; i--) ctx.lineTo(w / 2 - (i % 2 ? 5 : 0), -h / 2 + i * h / 6);
+    ctx.closePath(); ctx.fill();
+    ctx.shadowColor = 'transparent';
+    ctx.fillStyle = 'rgba(255,255,255,.18)'; ctx.fillRect(-w / 2 + 6, -h / 2 + 8, w - 12, 8);
+    ctx.restore();
+  }
+
+  function hexA(hex, a) {
+    var n = parseInt(hex.slice(1), 16);
+    return 'rgba(' + (n >> 16) + ',' + (n >> 8 & 255) + ',' + (n & 255) + ',' + a + ')';
+  }
+
+  window.__tp = { W: W, H: H, X0: X0, Y0: Y0, X1: X1, Y1: Y1, STYLES: STYLES, PAPERS: PAPERS, INKS: INKS, FONTS: FONTS, EDGES: EDGES,
+    state: state, rng: rng, leftPts: leftPts, pathFrom: pathFrom, texture: texture, tape: tape, hexA: hexA };
+})();
+(function () {
+  var T = window.__tp, X0 = T.X0, Y0 = T.Y0, X1 = T.X1, Y1 = T.Y1;
+  var BLUE = 'rgba(70,98,152,.40)', RED = 'rgba(178,70,60,.55)';
+
+  function cfg(style) {
+    var b = { LH: 44, startY: Y0 + 160, textL: X0 + 80, textR: X1 - 60, bottom: Y1 - 70, lines: true, lc: BLUE };
+    function m(o) { for (var k in o) b[k] = o[k]; return b; }
+    switch (style) {
+      case 'ruled': return m({ textL: X0 + 135, margin: X0 + 114 });
+      case 'wide': return m({ LH: 58, startY: Y0 + 170, textL: X0 + 90 });
+      case 'grid': return m({ LH: 40, startY: Y0 + 160, lines: false, grid: 40, textL: X0 + 80 });
+      case 'dots': return m({ LH: 40, startY: Y0 + 160, lines: false, dots: 40, textL: X0 + 80 });
+      case 'plain': return m({ LH: 46, lines: false, textL: X0 + 80 });
+      case 'cornell': return m({ textL: X0 + 285, cue: X0 + 262, sum: Y1 - 210, bottom: Y1 - 235 });
+      case 'todo': return m({ LH: 50, textL: X0 + 135, startY: Y0 + 165 });
+      case 'letter': return m({ LH: 46, startY: Y0 + 180, textL: X0 + 100, textR: X1 - 90, bottom: Y1 - 110, frame: true, lc: 'rgba(110,80,40,.22)' });
+      case 'legal': return m({ startY: Y0 + 190, textL: X0 + 140, margin: X0 + 112, margin2: X0 + 118 });
+      case 'scrap': return m({ LH: 46, startY: Y0 + 180, textL: X0 + 100, textR: X1 - 90, bottom: Y1 - 110, lines: false, dots: 46, scrap: true });
+    }
+    return b;
+  }
+
+  function hline(ctx, y, col, w) { ctx.strokeStyle = col; ctx.lineWidth = w || 1.6; ctx.beginPath(); ctx.moveTo(X0 - 10, y); ctx.lineTo(X1, y); ctx.stroke(); }
+  function vline(ctx, x, col, y0, y1, w) { ctx.strokeStyle = col; ctx.lineWidth = w || 1.6; ctx.beginPath(); ctx.moveTo(x, y0); ctx.lineTo(x, y1); ctx.stroke(); }
+
+  function pattern(ctx, c, st) {
+    var y, x, first = c.startY - c.LH;
+    var last = c.sum ? c.sum : c.bottom + 12;
+    if (c.lines) for (y = first; y <= last; y += c.LH) hline(ctx, y, c.lc);
+    if (c.grid) {
+      ctx.strokeStyle = 'rgba(70,98,152,.30)'; ctx.lineWidth = 1.2;
+      for (y = Y0 + 20; y <= Y1; y += c.grid) { ctx.beginPath(); ctx.moveTo(X0 - 10, y); ctx.lineTo(X1, y); ctx.stroke(); }
+      for (x = X0 + 20; x <= X1; x += c.grid) { ctx.beginPath(); ctx.moveTo(x, Y0); ctx.lineTo(x, Y1); ctx.stroke(); }
+    }
+    if (c.dots) {
+      ctx.fillStyle = 'rgba(60,78,120,.45)';
+      for (y = Y0 + 30; y <= Y1; y += c.dots) for (x = X0 + 30; x <= X1; x += c.dots) { ctx.beginPath(); ctx.arc(x, y, 2, 0, 6.2832); ctx.fill(); }
+    }
+    if (c.margin) vline(ctx, c.margin, RED, Y0, Y1);
+    if (c.margin2) { vline(ctx, c.margin2, RED, Y0, Y1); hline(ctx, first - 14, RED); hline(ctx, first - 20, RED); }
+    if (c.cue) {
+      vline(ctx, c.cue, RED, first, c.sum); hline(ctx, c.sum, 'rgba(90,60,35,.6)', 2.2);
+      ctx.fillStyle = 'rgba(90,60,35,.5)'; ctx.font = '17px "IM Fell English", serif';
+      ctx.fillText('CUES', X0 + 120, first - 10); ctx.fillText('NOTES', c.cue + 24, first - 10); ctx.fillText('SUMMARY', X0 + 84, c.sum + 34);
+    }
+    if (c.frame) {
+      ctx.strokeStyle = 'rgba(110,75,35,.6)'; ctx.lineWidth = 3; ctx.strokeRect(X0 + 56, Y0 + 40, X1 - X0 - 96, Y1 - Y0 - 80);
+      ctx.lineWidth = 1; ctx.strokeRect(X0 + 66, Y0 + 50, X1 - X0 - 116, Y1 - Y0 - 100);
+    }
+    if (c.scrap) {
+      ctx.strokeStyle = 'rgba(110,75,35,.6)'; ctx.lineWidth = 2.4; ctx.setLineDash([12, 8]);
+      ctx.strokeRect(X0 + 60, Y0 + 44, X1 - X0 - 104, Y1 - Y0 - 88); ctx.setLineDash([]);
+      var cs = [[X0 + 48, Y0 + 32, 1, 1], [X1 - 32, Y0 + 32, -1, 1], [X0 + 48, Y1 - 32, 1, -1], [X1 - 32, Y1 - 32, -1, -1]];
+      ctx.fillStyle = 'rgba(70,45,28,.78)';
+      cs.forEach(function (p) { ctx.beginPath(); ctx.moveTo(p[0], p[1]); ctx.lineTo(p[0] + 46 * p[2], p[1]); ctx.lineTo(p[0], p[1] + 46 * p[3]); ctx.closePath(); ctx.fill(); });
+    }
+  }
+
+  function wrap(ctx, text, maxW) {
+    var out = [], paras = text.replace(/\r/g, '').split('\n');
+    paras.forEach(function (p) {
+      if (!p.trim()) { out.push({ t: '', first: true, blank: true }); return; }
+      var words = p.split(/\s+/).filter(Boolean), line = '', first = true;
+      words.forEach(function (w) {
+        while (ctx.measureText(w).width > maxW) {
+          var k = w.length; while (k > 1 && ctx.measureText(w.slice(0, k)).width > maxW) k--;
+          if (line) { out.push({ t: line, first: first }); first = false; line = ''; }
+          out.push({ t: w.slice(0, k), first: first }); first = false; w = w.slice(k);
+        }
+        var test = line ? line + ' ' + w : w;
+        if (ctx.measureText(test).width <= maxW) line = test;
+        else { out.push({ t: line, first: first }); first = false; line = w; }
+      });
+      if (line) out.push({ t: line, first: first });
+    });
+    return out;
+  }
+
+  function writeText(ctx, c, data, st) {
+    var font = T.FONTS[st.font], ink = T.INKS[st.ink].c;
+    var hr = T.rng(4242), BN = /[\u0980-\u09FF]/;
+    var fam = '"' + font.f + '", "Comic Sans MS", cursive', bnFam = '"' + font.b.f + '", "Noto Sans Bengali", cursive';
+    var info = { used: 0, cap: 0, cut: false };
+    var N = Math.floor((c.bottom - c.startY) / c.LH) + 1;
+    var title = data.title.trim(), date = data.date.trim();
+    function size(bn) { return c.LH * (bn ? font.b.s : .7 * font.s); }
+    function setF(sz, bn) { ctx.font = (bn ? font.b.w + ' ' : '') + sz + 'px ' + (bn ? bnFam : fam); }
+    ctx.fillStyle = ink; ctx.textBaseline = 'alphabetic';
+    function put(txt, x, y, align, sz, bn) {
+      ctx.save(); setF(sz, bn); ctx.textAlign = align || 'left';
+      ctx.globalAlpha = .86 + hr() * .12;
+      ctx.translate(x + (hr() - .5) * 2.4, y + (hr() - .5) * 2.6); ctx.rotate((hr() - .5) * .007);
+      ctx.fillText(txt, 0, 0); ctx.restore();
+    }
+    if (date) {
+      var bd = BN.test(date), ds = size(bd) * .95; setF(ds, bd);
+      while (ctx.measureText(date).width > 470 && ds > 12) { ds -= 1; setF(ds, bd); }
+      put(date, X1 - 70, c.startY - c.LH - 12, 'right', ds, bd);
+    }
+    var off = 0;
+    if (title) {
+      var bt = BN.test(title), ts = size(bt) * 1.18, tw = c.textR - c.textL;
+      setF(ts, bt); while (ctx.measureText(title).width > tw && ts > 12) { ts -= 1; setF(ts, bt); }
+      put(title, c.textL, c.startY - 9, 'left', ts, bt);
+      var uw = Math.min(ctx.measureText(title).width + 16, tw);
+      ctx.strokeStyle = T.hexA(ink, .5); ctx.lineWidth = 1.8; ctx.beginPath();
+      ctx.moveTo(c.textL - 4, c.startY - 2); ctx.quadraticCurveTo(c.textL + uw / 2, c.startY + 3, c.textL + uw, c.startY - 3); ctx.stroke();
+      off = 1;
+    }
+    var bb = BN.test(data.body), sz = size(bb);
+    setF(sz, bb);
+    var lines = wrap(ctx, data.body, c.textR - c.textL), cap = N - off;
+    info.cap = cap; info.used = lines.length; info.cut = lines.length > cap;
+    lines.slice(0, Math.max(cap, 0)).forEach(function (ln, i) {
+      var y = c.startY + (off + i) * c.LH - 9;
+      if (c.todoBox && ln.first && !ln.blank) {
+        ctx.strokeStyle = T.hexA(ink, .75); ctx.lineWidth = 2.2;
+        ctx.strokeRect(c.textL - 46 + (hr() - .5) * 2, y - 22 + (hr() - .5) * 2, 24, 24);
+      }
+      if (ln.t) put(ln.t, c.textL, y, 'left', sz, bb);
+    });
+    return info;
+  }
+
+  function draw(ctx, scale, data) {
+    var st = T.state, paper = T.PAPERS[st.paper];
+    ctx.setTransform(scale, 0, 0, scale, 0, 0);
+    ctx.clearRect(0, 0, T.W, T.H);
+    var edge = st.edge, fibre = T.leftPts(edge, st.seed + 11, 9).map(function (p) { return [p[0] - 2 - Math.abs(Math.sin(p[1] * 7)) * 4, p[1]]; });
+    var pts = T.leftPts(edge, st.seed, 0);
+    ctx.save();
+    ctx.shadowColor = 'rgba(0,0,0,.45)'; ctx.shadowBlur = 22; ctx.shadowOffsetX = 5; ctx.shadowOffsetY = 10;
+    T.pathFrom(ctx, fibre); ctx.fillStyle = '#f7eecf'; ctx.fill();
+    ctx.restore();
+    ctx.save();
+    T.pathFrom(ctx, pts); ctx.fillStyle = paper.c; ctx.fill(); ctx.clip();
+    T.texture(ctx, paper, data.extras);
+    var c = cfg(st.style); c.todoBox = st.style === 'todo';
+    pattern(ctx, c, st);
+    var info = writeText(ctx, c, data, st);
+    ctx.restore();
+    if (data.extras.tape) T.tape(ctx);
+    return info;
+  }
+
+  T.draw = draw;
+})();
+(function () {
+  var T = window.__tp, S = T.state;
+  function $(id) { return document.getElementById(id); }
+  var cv = $('sheet'), ctx = cv.getContext('2d'), note = $('note');
+  var SAMPLE = "Today felt slow in the best way. I made tea, opened the window, and listened to the rain on the roof for a long time.\n\nI want to remember this: the smell of wet earth, the old song on the radio, and how quiet the house was.\n\nTomorrow I will write more.";
+  var store = null; try { store = window.localStorage; } catch (e) { store = null; }
+  function load(k, d) { try { return store && store.getItem(k) != null ? store.getItem(k) : d; } catch (e) { return d; } }
+  function save(k, v) { try { store && store.setItem(k, v); } catch (e) {} }
+
+  $('date').value = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  $('title').value = load('tp_title', 'Dear Diary,');
+  $('body').value = load('tp_body', SAMPLE);
+  var sampleActive = $('body').value === SAMPLE;
+  $('body').addEventListener('focus', function () { if (sampleActive) { this.select(); sampleActive = false; } });
+
+  function chips(id, items, key, mk) {
+    var box = $(id); box.innerHTML = '';
+    items.forEach(function (it, i) {
+      var b = document.createElement('button'); b.type = 'button';
+      var val = it.id !== undefined ? it.id : i;
+      mk(b, it);
+      b.setAttribute('aria-label', it.name || it.n);
+      b.setAttribute('aria-pressed', String(S[key] === val));
+      b.addEventListener('click', function () {
+        S[key] = val;
+        Array.prototype.forEach.call(box.children, function (el) { el.setAttribute('aria-pressed', 'false'); });
+        b.setAttribute('aria-pressed', 'true');
+        if (key === 'paper') paintStack();
+        if (key === 'edge') buildStack();
+        if (key === 'font') ensureFont().then(render); else render();
+      });
+      box.appendChild(b);
+    });
+  }
+  chips('styles', T.STYLES, 'style', function (b, it) {
+    b.className = 'chip'; b.innerHTML = '<span class="pat ' + (it.id === 'ruled' || it.id === 'wide' || it.id === 'grid' || it.id === 'dots' || it.id === 'plain' || it.id === 'cornell' || it.id === 'letter' || it.id === 'legal' ? it.id : it.id === 'todo' ? 'todo' : 'scrap') + '"></span>' + it.name;
+  });
+  chips('papers', T.PAPERS, 'paper', function (b, it) { b.className = 'swatch'; b.style.background = it.c; b.title = it.n; });
+  chips('inks', T.INKS, 'ink', function (b, it) { b.className = 'swatch'; b.style.background = it.c; b.title = it.n; });
+  chips('fonts', T.FONTS, 'font', function (b, it) { b.className = 'chip fontchip'; b.style.fontFamily = '"' + it.f + '", "' + it.b.f + '", cursive'; b.textContent = 'Aa \u0985 ' + it.n.split(' ')[0]; });
+  chips('edges', T.EDGES, 'edge', function (b, it) { b.className = 'chip'; b.textContent = it.name; });
+
+  var box = cv.parentNode, stack = document.createElement('div');
+  stack.className = 'stack'; box.insertBefore(stack, cv);
+  function buildStack() {
+    stack.innerHTML = '';
+    var i, k, el, edge = S.edge;
+    var Lx = edge === 'spiral' ? T.X0 - 40 : edge === 'straight' ? T.X0 + 4 : T.X0 - 12;
+    var lw = T.X1 - Lx, lh = T.Y1 - T.Y0, clip = '';
+    if (edge === 'rough') {
+      var pts = T.leftPts('rough', S.seed, 0), parts = ['100% 0%', '100% 100%'];
+      for (k = pts.length - 1; k >= 0; k--) parts.push(((pts[k][0] - Lx) / lw * 100).toFixed(2) + '% ' + ((pts[k][1] - T.Y0) / lh * 100).toFixed(2) + '%');
+      clip = 'polygon(' + parts.join(',') + ')';
+    }
+    for (i = 5; i >= 0; i--) {
+      el = document.createElement('div'); el.className = 'under';
+      el.style.left = (Lx / T.W * 100 + i * .1) + '%'; el.style.top = (3.23 + i * .62) + '%';
+      el.style.width = (lw / T.W * 100 + i * .22) + '%'; el.style.height = '93.55%';
+      el.style.transform = 'rotate(' + (i % 2 ? .35 : -.3) * (i ? 1 : 0) + 'deg)';
+      el.style.filter = 'brightness(' + (1 - i * .035) + ')';
+      if (clip) el.style.clipPath = clip;
+      if (i === 0) el.style.background = 'repeating-linear-gradient(to bottom, transparent 0, transparent 3.7%, rgba(70,98,152,.22) 3.7%, rgba(70,98,152,.22) 3.85%), var(--pc)';
+      stack.appendChild(el);
+    }
+    if (edge === 'spiral') for (k = 0; k < 14; k++) {
+      el = document.createElement('div'); el.className = 'hole';
+      el.style.left = (52 / 940 * 100) + '%'; el.style.top = ((96 + 78 * k) / 1240 * 100) + '%';
+      stack.appendChild(el);
+    }
+  }
+  buildStack();
+  function paintStack() {
+    var p = T.PAPERS[S.paper];
+    box.style.setProperty('--pc', p.c); box.style.setProperty('--pe', T.hexA(p.e, .5));
+  }
+  paintStack();
+
+  var armed = null;
+  $('clear').addEventListener('click', function () {
+    var b = this;
+    if (!armed) {
+      b.textContent = 'Tap again to clear everything';
+      armed = setTimeout(function () { armed = null; b.textContent = 'Clear page'; }, 3000);
+      return;
+    }
+    clearTimeout(armed); armed = null; b.textContent = 'Clear page';
+    $('title').value = ''; $('body').value = ''; sampleActive = false;
+    save('tp_title', ''); save('tp_body', '');
+    render(); $('title').focus();
+  });
+
+  function data() {
+    return { date: $('date').value, title: $('title').value, body: $('body').value,
+      extras: { stain: $('x-stain').checked, tape: $('x-tape').checked, fold: $('x-fold').checked, age: $('x-age').checked } };
+  }
+  var bnDone = {};
+  function loadBn() { var b = T.FONTS[S.font].b; return document.fonts.load(b.w + ' 30px "' + b.f + '"', '\u0985\u0986\u0995\u0996'); }
+  function hasBn() { var d = data(); return /[\u0980-\u09FF]/.test(d.title + d.body + d.date); }
+  function ensureFont() {
+    var f = T.FONTS[S.font].f;
+    if (!document.fonts || !document.fonts.load) return Promise.resolve();
+    var jobs = [document.fonts.load('30px "' + f + '"', 'Abc'), document.fonts.load('17px "IM Fell English"', 'Abc')];
+    if (hasBn()) jobs.push(loadBn());
+    return Promise.all(jobs).catch(function () {});
+  }
+  var queued = false;
+  function render() {
+    if (queued) return; queued = true;
+    requestAnimationFrame(function () {
+      queued = false;
+      var info = T.draw(ctx, 1, data());
+      if (hasBn() && !bnDone[S.font] && document.fonts && document.fonts.load) {
+        bnDone[S.font] = true;
+        loadBn().catch(function () {}).then(render);
+      }
+      var cnt = $('count'), left = $('left');
+      if (info.cut) { cnt.className = 'count full'; left.textContent = 'Page is full. The extra text is cut off.'; }
+      else { cnt.className = 'count'; left.textContent = (info.cap - info.used) + ' lines left'; }
+    });
+  }
+  ['date', 'title', 'body', 'x-stain', 'x-tape', 'x-fold', 'x-age'].forEach(function (id) {
+    $(id).addEventListener('input', function () { if (id === 'title') save('tp_title', this.value); if (id === 'body') save('tp_body', this.value); render(); });
+    $(id).addEventListener('change', render);
+  });
+  $('retear').addEventListener('click', function () { S.seed = Math.floor(Math.random() * 99999) + 1; if (S.edge === 'rough') buildStack(); render(); });
+
+  function say(msg, err) { note.textContent = msg; note.className = 'note' + (err ? ' err' : ''); }
+  var busy = false, reduce = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+  function makeBlob() {
+    var off = document.createElement('canvas'); off.width = T.W * 2; off.height = T.H * 2;
+    T.draw(off.getContext('2d'), 2, data());
+    return new Promise(function (res, rej) { off.toBlob(function (b) { b ? res(b) : rej(new Error('blob')); }, 'image/png'); });
+  }
+  function tearAnim() {
+    if (reduce || !cv.animate) return Promise.resolve();
+    cv.style.transformOrigin = '5% 50%';
+    return cv.animate([
+      { opacity: 1, transform: 'none', offset: 0 },
+      { opacity: 1, transform: 'rotate(-.7deg)', offset: .07 },
+      { opacity: 1, transform: 'translateX(3px) rotate(.8deg)', offset: .14 },
+      { opacity: 1, transform: 'translateX(-2px) rotate(-1.1deg)', offset: .21 },
+      { opacity: 1, transform: 'translateX(4px) rotate(.6deg)', offset: .28 },
+      { opacity: 1, transform: 'translate(10px,-6px) rotate(-2.2deg)', offset: .45 },
+      { opacity: 1, transform: 'translate(14px,-10px) rotate(-3.5deg)', offset: .58 },
+      { opacity: 0, transform: 'translate(55%,-65%) rotate(15deg)', offset: 1 }
+    ], { duration: 1500, easing: 'ease-in-out', fill: 'forwards' }).finished;
+  }
+  function returnPage() {
+    cv.getAnimations().forEach(function (a) { a.cancel(); });
+    if (cv.animate && !reduce) cv.animate([{ opacity: 0, transform: 'translateY(18px)' }, { opacity: 1, transform: 'none' }], { duration: 480, easing: 'ease-out' });
+  }
+  function linkSave(blob, name) {
+    try {
+      var u = URL.createObjectURL(blob), l = document.createElement('a');
+      l.href = u; l.download = name; l.style.display = 'none'; document.body.appendChild(l); l.click();
+      setTimeout(function () { document.body.removeChild(l); }, 500);
+    } catch (e) {}
+  }
+  function finish(blob) {
+    var d = new Date(), stamp = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    var name = 'torn-page-' + stamp + '.png';
+    function plain() { linkSave(blob, name); showFallback(blob); }
+    if (!(window.claude && window.claude.use)) { plain(); return Promise.resolve(); }
+    return window.claude.use('downloads').then(function (dl) {
+      if (!dl) { plain(); return; }
+      return dl.save({ filename: name, data: blob }).then(function () { say('Saved. Your page is back here so you can keep writing.'); })
+        .catch(function (e) {
+          if (e && e.code === 'declined') say('Download cancelled. Press the button to try again.');
+          else if (e && e.code === 'rate_limited') say('Please wait a moment, then try again.', true);
+          else plain();
+        });
+    }).catch(plain);
+  }
+  $('dl').addEventListener('click', function () {
+    if (busy) return; busy = true; $('dl').disabled = true; say('Tearing out your page...');
+    var blobP = ensureFont().then(makeBlob), animP = tearAnim();
+    Promise.all([blobP, animP]).then(function (r) { return finish(r[0]); })
+      .catch(function () { say('Something went wrong while preparing the image. Please try again.', true); })
+      .then(function () { returnPage(); busy = false; $('dl').disabled = false; });
+  });
+  function showFallback(blob) {
+    var url = URL.createObjectURL(blob), a = $('fallback');
+    if (!a) { a = document.createElement('img'); a.id = 'fallback'; a.style.cssText = 'width:100%;max-width:560px;margin:8px auto 0;display:block;border-radius:4px'; $('note').parentNode.appendChild(a); }
+    a.src = url; a.alt = 'Your torn diary page, ready to save';
+    say('Your page is ready. If the download did not start, press and hold the picture below (right-click on a computer) and choose Save image.');
+    setTimeout(function () { try { a.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) {} }, 350);
+  }
+
+  ensureFont().then(render); render();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(render);
+})();
+</script>
+</body></html>
